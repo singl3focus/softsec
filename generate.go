@@ -84,7 +84,21 @@ func GenerateKeysRSA(pubKeyPathTXT string) (*rsa.PrivateKey, *rsa.PublicKey, err
 	return privKey, &pubKey, nil
 }
 
+// CreateFilename created a filename with specifed format
+// Filename consists of the prefix of the main word and the rest of the words separated by a sep passed to the function
+func CreateFilename(format, sep string, other ...any) string {
+	var res []string
+	
+	for _, item := range other {
+		res = append(res, fmt.Sprint(item))
+	}
+	
+	formatFull := fmt.Sprintf(".%s", format)
 
+	return strings.Join(res, sep) + formatFull
+}
+
+// FileExists
 func FileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -151,3 +165,4 @@ func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
 
 	return nil
 }
+
