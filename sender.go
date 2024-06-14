@@ -1,15 +1,12 @@
-package request
+package softsec
 
 import (
-	"crypto/md5"
-	"crypto/rsa"
+	"os"
 	"fmt"
 	"log"
-	"os"
 	"reflect"
-
-	"github.com/singl3focus/softsec/internal/license"
-	"github.com/singl3focus/softsec/internal/sysinfo"
+	"crypto/md5"
+	"crypto/rsa"
 )
 
 const (
@@ -34,14 +31,14 @@ func StartChecking(s1, s2 string) {
 
 // GenerateRSALicenseRequest
 func GenerateRSALicenseRequest(deviceName string) error {
-	machineInfo, err := sysinfo.GetFullMachineInfo()
+	machineInfo, err := GetFullMachineInfo()
 	if err != nil { return err }
 
 	pubKeyPathPEM := fmt.Sprintf("%s_public.pem", deviceName)
-	blkPub, err := license.ReadPEMFile(pubKeyPathPEM, license.BlockTypePubKey)
+	blkPub, err := ReadPEMFile(pubKeyPathPEM, BlockTypePubKey)
 	if err != nil { return err }
 
-	key, err := license.ConvertBlock(blkPub, license.TypePEMPubKeyRSA)
+	key, err := ConvertBlock(blkPub, TypePEMPubKeyRSA)
 	if err != nil { return err }
 
 	readyKey, ok := key.(*rsa.PublicKey)
@@ -49,7 +46,7 @@ func GenerateRSALicenseRequest(deviceName string) error {
 		return fmt.Errorf("failed to convert data block to needed type")
 	}
 
-	request, err := license.EncryptMsgWithPubKey(readyKey, machineInfo)
+	request, err := EncryptMsgWithPubKey(readyKey, machineInfo)
 	if err != nil { return err }
 
 	file, err := os.Create(ReqLicenseFilename)
@@ -74,7 +71,7 @@ func GetInfoFromFile(LicenseFilename string) ([]byte, error) {
 
 // CheckLicense
 func CheckLicense(salt1, salt2 string) ([]byte, error) {
-	machineInfo, err := sysinfo.GetFullMachineInfo()
+	machineInfo, err := GetFullMachineInfo()
 	if err != nil {
 		return []byte{}, err
 	}

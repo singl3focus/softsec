@@ -1,4 +1,4 @@
-package license
+package softsec
 
 import (
 	"crypto/md5"

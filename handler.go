@@ -1,24 +1,21 @@
-package request
+package softsec
 
 import (
 	"os"
 	"fmt"
 	"crypto/md5"
 	"crypto/rsa"
-
-	"github.com/singl3focus/softsec/internal/license"
-	"github.com/singl3focus/softsec/internal/sysinfo"
 )
 
 // HandleRSALicenseRequest
 func HandleRSALicenseRequest(deviceName string) error {
 	privKeyPathPEM := fmt.Sprintf("%s_private.pem", deviceName)
-	blkPriv, err := license.ReadPEMFile(privKeyPathPEM, license.BlockTypePrivKey)
+	blkPriv, err := ReadPEMFile(privKeyPathPEM, BlockTypePrivKey)
 	if err != nil {
 		return err
 	}
 
-	key, err := license.ConvertBlock(blkPriv, license.TypePEMPrivKeyRSA)
+	key, err := ConvertBlock(blkPriv, TypePEMPrivKeyRSA)
 	if err != nil {
 		return err
 	}
@@ -33,15 +30,15 @@ func HandleRSALicenseRequest(deviceName string) error {
 		return err
 	}
 
-	decryrtedmsg, err := license.DecryptMsgWithPrivKey(readyKey, ciphermsg)
+	decryrtedmsg, err := DecryptMsgWithPrivKey(readyKey, ciphermsg)
 	if err != nil {
 		return err
 	}
 
-	sysinfo.DisplayData(decryrtedmsg)
+	DisplayData(decryrtedmsg)
 
 	hash := GenerateHash(decryrtedmsg)
-	if ok = license.FileExists(RespLicenseFilename); ok {
+	if ok = FileExists(RespLicenseFilename); ok {
 		return fmt.Errorf("DANGER: %s already exist", RespLicenseFilename)
 	}
 

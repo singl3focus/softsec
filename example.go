@@ -1,4 +1,4 @@
-package main
+package softsec
 
 import (
 	"flag"
@@ -11,9 +11,6 @@ import (
 	"math/rand"
 
 	"github.com/spf13/viper"
-
-	"github.com/singl3focus/softsec/internal/license"
-	"github.com/singl3focus/softsec/internal/request"
 )
 
 var (
@@ -35,6 +32,9 @@ func init() {
 
 
 func main() {
+	// Config setup....	
+	setConfig(".", "config", "yaml")
+
 	// Log setup _____________________________________
 	err := os.MkdirAll("logs", os.ModePerm)
 	if err != nil {
@@ -57,7 +57,7 @@ func main() {
 	// Generated keys ________________________________ 
 	if *genFlag != defaultValueGenFlag {
 		pubKeyPathTXT := CreateFilename("txt", "_", *genFlag, "public")
-		_, _, err = license.GenerateKeysRSA(pubKeyPathTXT)
+		_, _, err = GenerateKeysRSA(pubKeyPathTXT)
 		if err != nil {
 			log.Fatalf("failed to generate RSA keys: %s", err.Error())
 		}
@@ -65,22 +65,22 @@ func main() {
 	
 	// Give response to license request _______________
 	if *licRespFlag != defaultValueGenLicRespFlag {
-		err = request.HandleRSALicenseRequest(*licRespFlag)
+		err = HandleRSALicenseRequest(*licRespFlag)
 		if err != nil {
 			log.Fatalf("failed to handle message by RSA: %s", err.Error())
 		}
 	}
 
 	if *licReqFlag != defaultValueGenLicReqFlag {
-		err = request.GenerateRSALicenseRequest(*licReqFlag)
+		err = GenerateRSALicenseRequest(*licReqFlag)
 		if err != nil {
 			log.Fatalf("failed to generate License Request keys: %s", err.Error())
 		}
 	}
 
-	go func(){
+	go func(){ // test
 		for {
-			request.StartChecking("salt1", "salt2")
+			StartChecking("salt1", "salt2")
 
 			min := 10
 			max := 60

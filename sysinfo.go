@@ -1,4 +1,4 @@
-package sysinfo
+package softsec
 
 import (
 	"log"
