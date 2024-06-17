@@ -30,6 +30,7 @@ import (
 	"math/rand"
 	"path/filepath"
 
+	"github.com/joho/godotenv"
 	"github.com/singl3focus/softsec"
 )
 
@@ -46,8 +47,14 @@ var (
 
 
 func main() {
+	// Env load
+	err := godotenv.Load()
+  	if err != nil {
+    	log.Fatal("Error loading .env file")
+  	}
+
 	// Log setup _____________________________________
-	err := os.MkdirAll("logs", os.ModePerm)
+	err = os.MkdirAll("logs", os.ModePerm)
 	if err != nil {
 		log.Fatalf("failed to create log directory: %v", err)
 	}
@@ -65,6 +72,9 @@ func main() {
     log.Println("Start license app....")
 	flag.Parse()
 
+	salt1 := os.Getenv("SALT1")
+	salt2 := os.Getenv("SALT2")
+
 	// Generated keys ________________________________ 
 	if *genFlag != defaultValueGenFlag {
 		pubKeyPathTXT := softsec.CreateFilename("txt", "_", *genFlag, "public")
@@ -74,15 +84,15 @@ func main() {
 		}
 	}
 	
-	// Give response to license request ______________
+	// Give response to license request _______________
 	if *licRespFlag != defaultValueGenLicRespFlag {
-        err = softsec.HandleRSALicenseRequest(*licRespFlag)
+		err = softsec.HandleRSALicenseRequest(*licRespFlag, salt1, salt2)
 		if err != nil {
-            log.Fatalf("failed to handle message by RSA: %s", err.Error())
+			log.Fatalf("failed to handle message by RSA: %s", err.Error())
 		}
 	}
 
-    // Generate licemse request ______________________
+	// Generate license request _______________________
 	if *licReqFlag != defaultValueGenLicReqFlag {
 		err = softsec.GenerateRSALicenseRequest(*licReqFlag)
 		if err != nil {
@@ -90,6 +100,7 @@ func main() {
 		}
 	}
 }
+
 
 ```
 

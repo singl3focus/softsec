@@ -12,7 +12,7 @@ import (
 // YOU MUST HAVE .env WITH variables SALT1, SALT2
 //
 // read only 'deviceName'_private.pem file 
-func HandleRSALicenseRequest(deviceName string) error {
+func HandleRSALicenseRequest(deviceName, salt1, salt2 string) error {
 	privKeyPathPEM := fmt.Sprintf("%s_private.pem", deviceName)
 	blkPriv, err := ReadPEMFile(privKeyPathPEM, BlockTypePrivKey)
 	if err != nil {
@@ -41,9 +41,8 @@ func HandleRSALicenseRequest(deviceName string) error {
 
 	DisplayData(decryrtedmsg, "CLIENT MACHINE INFO: ")
 
-	salt1 := os.Getenv("SALT1")
-	salt2 := os.Getenv("SALT2")
 	hash := GenerateHash(decryrtedmsg, salt1, salt2)
+
 	if ok = FileExists(RespLicenseFilename); ok {
 		return fmt.Errorf("DANGER: %s already exist", RespLicenseFilename)
 	}
@@ -54,8 +53,7 @@ func HandleRSALicenseRequest(deviceName string) error {
 	}
 	defer file.Close()
 
-	res :=  hash[:]
-	_, err = file.Write(res)
+	_, err = file.Write(hash)
 	if err != nil {
 		return err
 	}
@@ -65,10 +63,11 @@ func HandleRSALicenseRequest(deviceName string) error {
 }
 
 // GenerateHash return hash of needed info with salt1 and salt2
-func GenerateHash(info []byte, salt1, salt2 string) [16]byte {
+func GenerateHash(info []byte, salt1, salt2 string) []byte {
 	msg := []byte(salt1)
 	msg = append(msg, info...)
 	msg = append(msg, []byte(salt2)...)
 
-	return md5.Sum(msg)
+	hash := md5.Sum(msg)
+	return hash[:]
 }

@@ -5,6 +5,7 @@ go 1.22.3
 require (
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/elastic/go-sysinfo v1.14.0
+	github.com/joho/godotenv v1.5.1
 )
 
 require (

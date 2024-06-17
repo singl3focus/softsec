@@ -14,6 +14,7 @@ const (
 	RespLicenseFilename = "./license.resp"
 )
 
+// StartChecking
 func StartChecking(s1, s2 string) {
 	hash1, err := CheckLicense(s1, s2)
 	if err != nil {
@@ -77,9 +78,9 @@ func CheckLicense(salt1, salt2 string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	msg := []byte(salt1) // put here your salt, it must match the salt on the your checker(server)
+	msg := []byte(salt1) // it must match the salt on the your checker(server)
 	msg = append(msg, machineInfo...)
-	msg = append(msg, []byte(salt2)...) // put here your salt, it must match the salt on the your checker(server)
+	msg = append(msg, []byte(salt2)...) // it must match the salt on the your checker(server)
 
 	hash := md5.Sum(msg)
 	return hash[:], nil
