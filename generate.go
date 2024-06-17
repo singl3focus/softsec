@@ -26,7 +26,7 @@ var (
 )
 
 // GenetateKeysEd25519 generate Pub and Priv keys by ed25519 (for bi-directional communicate with pairs keys)
-// the keys are automaticly saved in root directory of the project
+// the keys are automaticly saved in root directory of the project (Only TXT files)
 func GenetateKeysEd25519(prefix, pubKeyPathTXT string) error {
 	privKeyPathTXT := strings.Replace(pubKeyPathTXT, "public", "private", 1)
 
@@ -52,7 +52,7 @@ func GenetateKeysEd25519(prefix, pubKeyPathTXT string) error {
 
 
 // GenerateKeysRSA generate Pub and Priv keys by RSA (for broadcast communication with pub key)
-// the keys are saved in root directory of the project
+// the keys are saved in root directory of the project (TXT and PEM files)
 func GenerateKeysRSA(pubKeyPathTXT string) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	privKeyPathTXT := strings.Replace(pubKeyPathTXT, "public", "private", 1)
 	pubKeyPathPEM := strings.Replace(pubKeyPathTXT, "txt", "pem", 1)
@@ -98,7 +98,7 @@ func CreateFilename(format, sep string, other ...any) string {
 	return strings.Join(res, sep) + formatFull
 }
 
-// FileExists
+// FileExists check exist file or not
 func FileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -107,7 +107,7 @@ func FileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-// saveKey saving key in the format specified in the arg "filePath".
+// saveKey save key in the format specified in the arg "filePath".
 // Recommend use .txt format.
 func saveKey(filePath string, key interface{}) error {
 	var data []byte

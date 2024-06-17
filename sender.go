@@ -29,7 +29,8 @@ func StartChecking(s1, s2 string) {
 	}
 }
 
-// GenerateRSALicenseRequest
+// GenerateRSALicenseRequest 
+// read only 'deviceName'_public.pem file
 func GenerateRSALicenseRequest(deviceName string) error {
 	machineInfo, err := GetFullMachineInfo()
 	if err != nil { return err }
@@ -76,9 +77,9 @@ func CheckLicense(salt1, salt2 string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	msg := []byte(salt1) // put here your salt, it must match the salt on the server
+	msg := []byte(salt1) // put here your salt, it must match the salt on the your checker(server)
 	msg = append(msg, machineInfo...)
-	msg = append(msg, []byte(salt2)...) // put here your salt, it must match the salt on the server
+	msg = append(msg, []byte(salt2)...) // put here your salt, it must match the salt on the your checker(server)
 
 	hash := md5.Sum(msg)
 	return hash[:], nil

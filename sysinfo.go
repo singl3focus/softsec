@@ -49,10 +49,10 @@ func GetHostInfo() ([]byte, error) {
 }
 
 // DisplayData - display data in a structure
-func DisplayData(data []byte) {
+func DisplayData(data []byte, initmsg string) {
 	infoSlice := bytes.Split(data, []byte(sysInfoSep))
 
-	log.Println("CLIENT MACHINE INFO: ")
+	log.Println(initmsg)
 	for _, v := range infoSlice {
 		log.Println(string(v))
 	}

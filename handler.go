@@ -8,6 +8,10 @@ import (
 )
 
 // HandleRSALicenseRequest
+// it is necessary in order to receive encrypted messages with the data of the client's machine
+// YOU MUST HAVE .env WITH variables SALT1, SALT2
+//
+// read only 'deviceName'_private.pem file 
 func HandleRSALicenseRequest(deviceName string) error {
 	privKeyPathPEM := fmt.Sprintf("%s_private.pem", deviceName)
 	blkPriv, err := ReadPEMFile(privKeyPathPEM, BlockTypePrivKey)
@@ -35,9 +39,11 @@ func HandleRSALicenseRequest(deviceName string) error {
 		return err
 	}
 
-	DisplayData(decryrtedmsg)
+	DisplayData(decryrtedmsg, "CLIENT MACHINE INFO: ")
 
-	hash := GenerateHash(decryrtedmsg)
+	salt1 := os.Getenv("SALT1")
+	salt2 := os.Getenv("SALT2")
+	hash := GenerateHash(decryrtedmsg, salt1, salt2)
 	if ok = FileExists(RespLicenseFilename); ok {
 		return fmt.Errorf("DANGER: %s already exist", RespLicenseFilename)
 	}
@@ -58,11 +64,8 @@ func HandleRSALicenseRequest(deviceName string) error {
 
 }
 
-// GenerateHash
-func GenerateHash(info []byte) [16]byte {
-	salt1 := os.Getenv("SALT1")
-	salt2 := os.Getenv("SALT2")
-
+// GenerateHash return hash of needed info with salt1 and salt2
+func GenerateHash(info []byte, salt1, salt2 string) [16]byte {
 	msg := []byte(salt1)
 	msg = append(msg, info...)
 	msg = append(msg, []byte(salt2)...)
